@@ -1,8 +1,9 @@
 name: Upload artifact
 
-on:
-  release:
-    types: [ published ]
+on: 
+  push:
+    tags:
+    - 'v*'
 
 jobs:
   upload_artifact:
@@ -26,6 +27,6 @@ jobs:
         - name: Compile
           run: mvn -B -U package
         
-        - uses: ncipollo/release-action@v1.10.0
+        - uses: ncipollo/release-action@v1
           with:
             artifacts: "target/*.jar"
