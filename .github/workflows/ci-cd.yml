@@ -52,13 +52,11 @@ jobs:
       - name: Compile
         run: mvn -B -U compile
       
-      - run: echo $DOCKER_REPOSITORY && echo $BUILD_VERSION
-      
       - name: Build Docker image
         run: |
           mvn -B -U \
-          -Djib.to.image=${{ env.DOCKER_REPOSITORY }} \
-          -Djib.to.tags=${{ env.BUILD_VERSION }},latest \
+          -Djib.to.image=$DOCKER_REPOSITORY \
+          -Djib.to.tags=$BUILD_VERSION,latest \
           jib:dockerBuild
       
       - name: Build Docker image (arm32v7)
@@ -66,31 +64,9 @@ jobs:
           mvn -B -U \
           -Djib.from.image=arm32v7/adoptopenjdk:11-jre \
           -Djib.from.platforms=linux/arm \
-          -Djib.to.image=${{ env.DOCKER_REPOSITORY }} \
-          -Djib.to.tags=${{ env.BUILD_VERSION }}-arm32v7,latest-arm32v7 \
+          -Djib.to.image=$DOCKER_REPOSITORY \
+          -Djib.to.tags=$BUILD_VERSION-arm32v7,latest-arm32v7 \
           jib:dockerBuild
       
       - name: Push to Docker Hub
-        run: docker push -a ${{ env.DOCKER_REPOSITORY }}
-  
-  publish:
-    name: Publish
-    needs: [build_and_verify]
-    runs-on: ubuntu-latest
-    steps:      
-      - uses: actions/checkout@v3
-      
-      - name: Setup JDK 11
-        uses: actions/setup-java@v3
-        with:
-          distribution: adopt
-          java-version: 11
-          cache: maven
-      
-      - name: Publish
-        run: |
-          mvn -B -U \
-          -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/$GITHUB_REPOSITORY \
-          deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: docker push -a $DOCKER_REPOSITORY
