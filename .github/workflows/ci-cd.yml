@@ -22,12 +22,12 @@ jobs:
       
       - name: Compile
         run: mvn -B -U compile
-        
+
       - run: ls -R
       
-      - uses: actions/upload-artifact@v3
+      - uses: actions/cache@v3
         with:
-          name: Compiled
+          key: Compiled files
           path: target/
       
       - name: Verify
@@ -59,11 +59,11 @@ jobs:
           BUILD_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_ENV
       
-      - uses: actions/download-artifact@v3
+      - uses: actions/cache@v3
         with:
-          name: Compiled
+          key: Compiled files
           path: target/
-      
+
       - run: ls -R
       
       - name: Build Docker image
