@@ -1,4 +1,4 @@
-name: CI CD
+name: CI/CD
 
 on:
   push:
@@ -11,12 +11,47 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'adopt'
-        java-version: 11
-        cache: 'maven'
-    - name: Build
-      run: mvn -B package
+      - uses: actions/checkout@v3
+      
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: adopt
+          java-version: 11
+          cache: maven
+      
+      - name: Build
+        run: mvn -B -U package
+  
+  docker_build:
+    name: Build Docker images
+    needs: [build_and_test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Setup env variables
+        run: |
+          echo "DOCKER_REPOSITORY=paprikar/cicd-test" >> $GITHUB_ENV
+          BUILD_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_ENV
+      
+      - name: Build
+        run: mvn -B -U jib:dockerBuild -Djib.to.image=${{ env.DOCKER_REPOSITORY }} -Djib.to.tags=${{ env.BUILD_VERSION }},latest
+      
+      - name: Build arm32v7
+        run: mvn -B -U jib:dockerBuild -Djib.from.image=arm32v7/adoptopenjdk:11-jre -Djib.from.platforms=linux/arm -Djib.to.image=${{ env.DOCKER_REPOSITORY }} -Djib.to.tags=${{ env.BUILD_VERSION }}-arm32v7,latest-arm32v7
+  
+  docker_push:
+    name: Push Docker images
+    needs: [docker_build]
+    runs-on: ubuntu-latest
+    steps:      
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Push
+        run: docker push -a ${{ env.DOCKER_REPOSITORY }}
