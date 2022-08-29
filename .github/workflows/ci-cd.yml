@@ -52,19 +52,23 @@ jobs:
       - name: Compile
         run: mvn -B -U compile
       
+      - run: echo $DOCKER_REPOSITORY && echo $BUILD_VERSION
+      
       - name: Build Docker image
         run: |
-          mvn -B -U jib:dockerBuild \
+          mvn -B -U \
           -Djib.to.image=${{ env.DOCKER_REPOSITORY }} \
-          -Djib.to.tags=${{ env.BUILD_VERSION }},latest
+          -Djib.to.tags=${{ env.BUILD_VERSION }},latest \
+          jib:dockerBuild
       
       - name: Build Docker image (arm32v7)
         run: |
-          mvn -B -U jib:dockerBuild \
+          mvn -B -U \
           -Djib.from.image=arm32v7/adoptopenjdk:11-jre \
           -Djib.from.platforms=linux/arm \
           -Djib.to.image=${{ env.DOCKER_REPOSITORY }} \
-          -Djib.to.tags=${{ env.BUILD_VERSION }}-arm32v7,latest-arm32v7
+          -Djib.to.tags=${{ env.BUILD_VERSION }}-arm32v7,latest-arm32v7 \
+          jib:dockerBuild
       
       - name: Push to Docker Hub
         run: docker push -a ${{ env.DOCKER_REPOSITORY }}
@@ -84,6 +88,9 @@ jobs:
           cache: maven
       
       - name: Publish
-        run: mvn -B -U deploy
+        run: |
+          mvn -B -U \
+          -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/$GITHUB_REPOSITORY \
+          deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
