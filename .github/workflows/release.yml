@@ -1,9 +1,8 @@
 name: Upload artifact
 
-on: 
-  push:
-    tags:
-    - 'v*'
+on:
+  release:
+    types: [ published ]
 
 jobs:
   upload_artifact:
@@ -24,9 +23,9 @@ jobs:
             BUILD_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
             echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_ENV
 
-        - name: Compile
+        - name: Package
           run: mvn -B -U package
         
-        - uses: ncipollo/release-action@v1
+        - uses: softprops/action-gh-release@v1
           with:
-            artifacts: "target/*.jar"
+            files: target/*.jar
