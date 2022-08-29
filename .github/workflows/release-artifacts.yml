@@ -1,12 +1,12 @@
-name: Upload artifact
+name: Release artifacts
 
 on:
   release:
     types: [ published ]
 
 jobs:
-  upload_artifact:
-      name: Upload artifact
+  upload_jars:
+      name: Upload JARs
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v3
@@ -26,6 +26,7 @@ jobs:
         - name: Package
           run: mvn -B -U package
         
-        - uses: softprops/action-gh-release@v1
+        - name: Upload
+          uses: softprops/action-gh-release@v1
           with:
             files: target/*.jar
