@@ -28,7 +28,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: Compiled
-          path: target
+          path: target/
       
       - name: Verify
         run: mvn -B -U verify
@@ -62,6 +62,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: Compiled
+          path: target/
       
       - run: ls -R
       
