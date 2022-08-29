@@ -7,7 +7,7 @@
     <groupId>dev.paprikar</groupId>
     <artifactId>cicd</artifactId>
     <version>1.0</version>
-    <name>ci-cd</name>
+    <name>cicd-test</name>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -31,13 +31,6 @@
                 <artifactId>jib-maven-plugin</artifactId>
                 <version>3.2.1</version>
                 <configuration>
-                    <to>
-                        <image>${project.name}</image>
-                        <tags>
-                            <tag>latest</tag>
-                            <tag>${project.version}</tag>
-                        </tags>
-                    </to>
                     <container>
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                     </container>
