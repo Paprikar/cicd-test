@@ -7,8 +7,8 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build_and_test:
-    name: Build and Test
+  build_and_verify:
+    name: Build and Verify
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -20,12 +20,20 @@ jobs:
           java-version: 11
           cache: maven
       
-      - name: Build and Test
+      - name: Compile
+        run: mvn -B -U compile
+      
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Compiled
+          path: target/**
+      
+      - name: Verify
         run: mvn -B -U verify
   
   docker_build_and_push:
     name: Build and Push Docker images
-    needs: [build_and_test]
+    needs: [build_and_verify]
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
@@ -49,8 +57,9 @@ jobs:
           BUILD_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_ENV
       
-      - name: Compile
-        run: mvn -B -U compile
+      - uses: actions/download-artifact@v3
+        with:
+          name: Compiled
       
       - name: Build Docker image
         run: |
