@@ -3,7 +3,7 @@ name: Draft Release
 on:
   push:
     tags:
-      - v*
+      - v\d+\.\d+\.3\.\d+
     branches: [ master ]
 
 jobs:
@@ -24,10 +24,9 @@ jobs:
       - name: Package
         run: mvn -B -U package
 
-      - name: Upload
-        uses: softprops/action-gh-release@v1
+      - name: Draft
+        uses: marvinpinto/action-automatic-releases@latest
         with:
-          draft: true
-          name: ${{ github.ref }} Release
-          generate_release_notes: true
+          title: ${{ github.ref_name }} Release
           files: target/*.jar
+          draft: true
