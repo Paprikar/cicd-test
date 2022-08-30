@@ -29,3 +29,4 @@ jobs:
           title: ${{ github.ref_name }} Release
           files: target/*.jar
           draft: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
