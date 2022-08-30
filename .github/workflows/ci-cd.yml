@@ -32,6 +32,7 @@ jobs:
 
   docker_build_and_push:
     name: Build and Push Docker images
+    needs: [ build_and_verify ]
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
