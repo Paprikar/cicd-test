@@ -6,28 +6,38 @@ on:
       - v*
 
 jobs:
-  draft:
+  release:
     name: Draft Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup JDK 11
-        uses: actions/setup-java@v3
+      - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          distribution: adopt
-          java-version: 11
-          cache: maven
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
 
-      - name: Package
-        run: mvn -B -U package
-
-      - name: Draft
-        uses: marvinpinto/action-automatic-releases@latest
-        with:
-          title: ${{ github.ref_name }} Release
-          files: target/*.jar
-          draft: true
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: ${{ github.ref_name }}
+#  draft:
+#    name: Draft Release
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#
+#      - name: Setup JDK 11
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: adopt
+#          java-version: 11
+#          cache: maven
+#
+#      - name: Package
+#        run: mvn -B -U package
+#
+#      - name: Draft
+#        uses: marvinpinto/action-automatic-releases@latest
+#        with:
+#          title: ${{ github.ref_name }} Release
+#          files: target/*.jar
+#          draft: true
+#          prerelease: false
+#          repo_token: ${{ secrets.GITHUB_TOKEN }}
+#          automatic_release_tag: ${{ github.ref_name }}
