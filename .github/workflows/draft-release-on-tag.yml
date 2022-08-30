@@ -3,7 +3,7 @@ name: Draft Release
 on:
   push:
     tags:
-      - v\d+\.\d+\.3\.\d+
+      - v*
 
 jobs:
   draft:
