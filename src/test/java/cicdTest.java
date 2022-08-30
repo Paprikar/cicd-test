@@ -7,4 +7,9 @@ public class cicdTest {
     void passingTest() {
         Assertions.assertTrue(true);
     }
+
+    @Test
+    void failingTest() {
+        Assertions.fail();
+    }
 }
