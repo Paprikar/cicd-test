@@ -13,11 +13,8 @@ jobs:
       - name: Draft
         uses: marvinpinto/action-automatic-releases@latest
         with:
-          title: ${{ github.ref_name }} Release
-          draft: true
           prerelease: false
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: ${{ github.ref_name }}
 
 #  draft:
 #    name: Draft Release
