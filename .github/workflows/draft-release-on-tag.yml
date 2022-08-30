@@ -11,16 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build Changelog
-        id: changelog_build
+        id: github_release
         uses: mikepenz/release-changelog-builder-action@v3
-        with:
-          commitMode: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: echo ${{ steps.changelog_build.outputs.changelog }}
-
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release
         with:
-          body: ${{ steps.changelog_build.outputs.changelog }}
+          body: ${{ steps.github_release.outputs.changelog }}
