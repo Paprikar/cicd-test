@@ -30,3 +30,4 @@ jobs:
           files: target/*.jar
           draft: true
           repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ github.ref_name }}
