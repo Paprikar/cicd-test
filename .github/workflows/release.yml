@@ -1,23 +1,14 @@
-name: Push Docker images
+name: Release
 
 on:
-  push:
-    branches: [ master ]
-    paths:
-      - src/**
-      - pom.xml
+  release:
+    types: [ published ]
 
 jobs:
-  docker_build_and_push:
-    name: Build and Push Docker images
+  release:
+    name: Release
     runs-on: ubuntu-latest
     steps:
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -28,21 +19,33 @@ jobs:
           java-version: 11
           cache: maven
 
+      - name: Package
+        run: mvn -B -U package
+
+      - name: Upload JARs
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ github.ref_name }} Release
+          files: target/*.jar
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Setup env variables
         run: |
           echo "DOCKER_REPOSITORY=paprikar/cicd-test" >> $GITHUB_ENV
           BUILD_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_ENV
 
-      - name: Compile
-        run: mvn -B -U compile
-
-      - name: Build Docker image
+      - name: Build image
         run: |
           mvn -B -U \
           -Djib.to.image=$DOCKER_REPOSITORY:latest \
           -Djib.to.tags=$BUILD_VERSION \
           jib:dockerBuild
 
-      - name: Push to Docker Hub
+      - name: Push image to Docker Hub
         run: docker push -a $DOCKER_REPOSITORY
