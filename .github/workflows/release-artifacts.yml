@@ -24,7 +24,7 @@ jobs:
           cache: maven
 
       - name: Package
-        run: mvn -B -U
+        run: mvn -B -U package
 
       - name: Upload
         uses: marvinpinto/action-automatic-releases@latest
