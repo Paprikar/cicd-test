@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dev.paprikar</groupId>
-    <artifactId>cicd</artifactId>
+    <artifactId>cicd-test</artifactId>
     <version>3.2</version>
     <name>cicd-test</name>
 
