@@ -6,7 +6,7 @@
 
     <groupId>dev.paprikar</groupId>
     <artifactId>cicd-test</artifactId>
-    <version>3.2</version>
+    <version>3.6.0</version>
     <name>cicd-test</name>
 
     <properties>
